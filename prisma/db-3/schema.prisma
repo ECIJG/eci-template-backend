@@ -1,6 +1,6 @@
 datasource db {
   provider = "sqlserver"
-  url      = env("DATABASE_URL_NOVASOFT")
+  url      = env("DATABASE_URL_DB3")
 }
 
 generator client {
@@ -8,13 +8,12 @@ generator client {
   output   = "../../node_modules/@prisma-clients/db-3"
 }
 
-model EmpleadoNovasoft {
-  codEmp    String   @id @map("cod_emp")
-  nombres   String   @map("nom_emp")
-  apellidos String   @map("ap1_emp")
-  correo    String   @map("e_mail")
-  cargo     String?  @map("nom_car")
-  estado    String?  @map("est_lab")
+// Define aquí los modelos para la Base de Datos 3
+// Modelo genérico inicial para permitir la inicialización del cliente Prisma:
+model Db3Item {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  createdAt DateTime @default(now())
 
-  @@map("rhh_emplea")
+  @@map("items_db3")
 }

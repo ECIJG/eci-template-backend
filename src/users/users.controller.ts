@@ -24,13 +24,15 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':correo/overview')
+  @Get(':correo')
   @Roles('admin')
   @ApiOperation({
-    summary: 'Resumen consolidado Multi-DB de un usuario',
-    description: 'Demuestra lectura simultánea de DB-1 (Principal), DB-2 (AppMovil) y DB-3 (Novasoft).',
+    summary: 'Consultar usuario por correo (Solo administradores)',
+    description: 'Ruta protegida que busca un usuario en la Base de Datos Principal.',
   })
-  getOverview(@Param('correo') correo: string) {
-    return this.usersService.getFullUserOverview(correo);
+  @ApiResponse({ status: 200, description: 'Datos del usuario consultado.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
+  findByCorreo(@Param('correo') correo: string) {
+    return this.usersService.findByCorreo(correo);
   }
 }

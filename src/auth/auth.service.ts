@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AzureTokenService } from './azure-token.service';
 import { PrimaryPrismaService } from '../database/primary-prisma.service';
-import { NovasoftPrismaService } from '../database/novasoft-prisma.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly azureTokenService: AzureTokenService,
     private readonly primaryPrisma: PrimaryPrismaService,
-    private readonly novasoftPrisma: NovasoftPrismaService,
   ) {}
 
   /**
@@ -54,45 +52,33 @@ export class AuthService {
     const azureClaims = await this.azureTokenService.verifyIdToken(idToken);
     const correo = azureClaims.correo;
 
-    // 2. Buscar o crear el usuario en la Base de Datos Principal (DB-1)
+    // 2. Buscar o registrar el usuario en la Base de Datos Principal (DB-1)
     let usuario: any = null;
     try {
       usuario = await this.primaryPrisma.usuario.findUnique({
         where: { correo },
       });
     } catch (dbError) {
-      this.logger.warn(`Error al consultar DB-1: ${dbError.message}. Usando fallback en memoria/desarrollo.`);
+      this.logger.warn(`Error al consultar DB-1: ${dbError.message}. Usando fallback para desarrollo.`);
     }
 
     if (!usuario) {
-      // Intentar enriquecer datos desde Novasoft (DB-3) si está disponible
-      let cargoNovasoft: string | null = null;
-      try {
-        const emp = await this.novasoftPrisma.empleadoNovasoft.findFirst({
-          where: { correo },
-        });
-        if (emp?.cargo) cargoNovasoft = emp.cargo;
-      } catch {
-        // Novasoft opcional o no conectado
-      }
-
-      // Si no existe, crear usuario por defecto
       try {
         usuario = await this.primaryPrisma.usuario.create({
           data: {
             correo,
             nombre: azureClaims.name || correo.split('@')[0],
-            rol: cargoNovasoft?.toLowerCase().includes('admin') ? 'admin' : 'user',
+            rol: 'user',
             activo: true,
           },
         });
       } catch {
-        // En caso de que la BD aún no tenga migraciones aplicadas, proveer usuario temporal para desarrollo
+        // En caso de que la BD aún no tenga migraciones aplicadas en desarrollo
         usuario = {
           id: 1,
           correo,
           nombre: azureClaims.name || correo.split('@')[0],
-          rol: 'admin',
+          rol: 'user',
           documento: '00000000',
         };
       }
