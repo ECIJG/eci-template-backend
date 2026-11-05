@@ -1,0 +1,19 @@
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL_APPMOVIL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma-clients/db-2"
+}
+
+model Dispositivo {
+  id         Int      @id @default(autoincrement())
+  correo     String
+  tokenPush  String
+  plataforma String   // 'android' | 'ios' | 'web'
+  createdAt  DateTime @default(now())
+
+  @@map("dispositivos")
+}

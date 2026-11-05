@@ -1,0 +1,20 @@
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL_NOVASOFT")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma-clients/db-3"
+}
+
+model EmpleadoNovasoft {
+  codEmp    String   @id @map("cod_emp")
+  nombres   String   @map("nom_emp")
+  apellidos String   @map("ap1_emp")
+  correo    String   @map("e_mail")
+  cargo     String?  @map("nom_car")
+  estado    String?  @map("est_lab")
+
+  @@map("rhh_emplea")
+}

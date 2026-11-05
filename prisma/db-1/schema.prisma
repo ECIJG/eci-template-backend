@@ -1,0 +1,22 @@
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma-clients/db-1"
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  correo    String   @unique
+  nombre    String?
+  documento String?
+  rol       String   @default("user") // admin, docente, estudiante, administrativo
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("usuarios")
+}
