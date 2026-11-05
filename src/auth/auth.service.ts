@@ -24,7 +24,7 @@ export class AuthService {
   /**
    * Verifica la validez y expiración de un token JWT.
    */
-  verifyToken<T = any>(token: string): T {
+  verifyToken<T extends object = any>(token: string): T {
     try {
       return this.jwtService.verify<T>(token);
     } catch (error) {
