@@ -1,0 +1,49 @@
+# TODO: Cambiar el nombre del contenedor a una variable de entorno para que no haya que modificar el script de deploy.sh
+name: ${CONTAINER_NAME}
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, back]
+
+    steps:
+      - name: Diagnosticar entorno del Runner
+        run: |
+          echo "========== RUNNER =========="
+          echo "HOST:"
+          hostname -f || hostname
+
+          echo "USUARIO:"
+          whoami
+          id
+
+          echo "DIRECTORIO ACTUAL:"
+          pwd
+
+          echo "========== RUTAS =========="
+
+          for path in \
+            /root \
+            /root/apps \
+            /root/apps/deploy.sh \
+            /root/apps/votaciones-api \
+            /root/apps/votaciones-api/.env \
+            /root/apps/.env-backups/votaciones-api.env
+          do
+            if [ -e "$path" ]; then
+              ls -ld "$path"
+            else
+              echo "NO EXISTE O NO ES ACCESIBLE: $path"
+            fi
+          done
+
+          echo "========== DOCKER =========="
+          docker context show || true
+          docker ps -a --format '{{.Names}}' | head -10 || true
+
+      - name: Deploy
+        # TODO: Cambiar el nombre del contenedor a una variable de entorno para que no haya que modificar el script de deploy.sh
+        run: bash /root/apps/deploy.sh ${CONTAINER NAME}

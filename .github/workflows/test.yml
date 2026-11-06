@@ -1,0 +1,13 @@
+name: votaciones-api
+
+on:
+  push:
+    branches: ['test']
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, test]
+
+    steps:
+      - name: Deploy
+        run: /root/apps/deploy.sh votaciones-api

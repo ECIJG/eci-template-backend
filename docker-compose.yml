@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      secrets:
+        - envfile
+        # TODO: Cambiar el nombre del contenedor a una variable de entorno para que no haya que modificar el script de deploy.sh
+    image: "votaciones-api:latest"
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - TZ=America/Bogota
+    volumes:
+      - ./uploads:/app/uploads:Z
+      # TODO: Cambiar el nombre del contenedor a una variable de entorno para que no haya que modificar el script de deploy.sh
+      - /root/apps/votaciones-api/uploads:/app/uploads:Z
+
+secrets:
+  envfile:
+    file: .env
